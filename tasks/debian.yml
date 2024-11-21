@@ -1,0 +1,34 @@
+---
+- name: Check if 32 bit architecture is enabled
+  ansible.builtin.command: dpkg --print-foreign-architectures
+  register: architecture
+  changed_when: false
+
+- name: Enable 32 bit architecture
+  when: '"i386" not in architecture.stdout'
+  ansible.builtin.command: dpkg --add-architecture i386
+  changed_when: false
+
+- name: Set APT priority for winehq
+  ansible.builtin.copy:
+    dest: /etc/apt/preferences.d/wine
+    mode: '0644'
+    content: |
+      Package: *
+      Pin: release o=dl.winehq.org
+      Pin-Priority: 501
+
+- name: Add signing key
+  ansible.builtin.apt_key:
+    url: https://dl.winehq.org/wine-builds/winehq.key
+    id: 76F1A20FF987672F
+    keyring: /usr/share/keyrings/winehq.gpg
+    state: present
+
+- name: Add APT repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64,i386 signed-by=/usr/share/keyrings/winehq.gpg]
+           https://dl.winehq.org/wine-builds/{{ ansible_distribution | lower }}
+           {{ ansible_distribution_release }} main"
+    filename: winehq
+    state: present

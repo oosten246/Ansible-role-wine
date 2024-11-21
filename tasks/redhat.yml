@@ -1,0 +1,9 @@
+---
+- name: Add YUM repository
+  ansible.builtin.yum_repository:
+    name: winehq
+    description: WineHQ packages
+    baseurl: "https://dl.winehq.org/wine-builds/fedora/{{ ansible_facts['distribution_major_version'] }}"
+    enabled: true
+    gpgkey: https://dl.winehq.org/wine-builds/winehq.key
+    gpgcheck: true
