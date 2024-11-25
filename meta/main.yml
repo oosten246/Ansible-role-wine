@@ -1,0 +1,6 @@
+galaxy_info:
+  author: oosten246
+  description: ansible role wine
+  license: MIT
+  min_ansible_version: '2.1'
+dependencies: []
