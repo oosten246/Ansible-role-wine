@@ -25,6 +25,29 @@
     keyring: /usr/share/keyrings/winehq.gpg
     state: present
 
+- name: Check if OS is Linux Mint
+  when: ansible_facts['distribution'] == "Linux Mint"
+  block:
+    - name: Set ansible_distribution for Linux Mint
+      ansible.builtin.set_fact:
+        ansible_distribution: "Ubuntu"
+        ansible_distribution_release: "noble"
+
+    - name: Set ansible_distribution_release for Linux Mint
+      when: ansible_facts['distribution_release'] == item.mint
+      ansible.builtin.set_fact:
+        ansible_distribution_release: "{{ item.ubuntu }}"
+      loop:
+        - { mint: "wilma", ubuntu: "noble" }
+        - { mint: "virginia", ubuntu: "jammy" }
+        - { mint: "victoria", ubuntu: "jammy" }
+        - { mint: "vera", ubuntu: "jammy" }
+        - { mint: "vanessa", ubuntu: "jammy" }
+        - { mint: "una", ubuntu: "focal" }
+        - { mint: "uma", ubuntu: "focal" }
+        - { mint: "ulyssa", ubuntu: "focal" }
+        - { mint: "ulyana", ubuntu: "focal" }
+
 - name: Add APT repository
   ansible.builtin.apt_repository:
     repo: "deb [arch=amd64,i386 signed-by=/usr/share/keyrings/winehq.gpg]
